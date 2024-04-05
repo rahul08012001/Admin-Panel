@@ -24,6 +24,10 @@ otp:{
 confirmPassword:{
     type:String,
 },
+image:{
+    type:String,
+   // required:true
+}
 
 
 })

@@ -14,6 +14,7 @@ const port = process.env.PORT;
 console.log("port", port)
 app.use(express.json())
 app.use(cors())
+app.use(express.static('public'))
 app.use(userRouter)
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:true}))

@@ -14,15 +14,14 @@ const sendOtp = async (req, res) => {
   });
   console.log(otp);
 
- const data = await User.findOneAndUpdate({email:email}, {otp:otp})
- console.log("data0", data)
- if(!data){
- return res.status(400).json({
-    success: false,
-    message: "email is not register ",
-  });
- }
-
+  const data = await User.findOneAndUpdate({ email: email }, { otp: otp });
+  console.log("data0", data);
+  if (!data) {
+    return res.status(400).json({
+      success: false,
+      message: "email is not register ",
+    });
+  }
 
   let transport = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -55,35 +54,29 @@ const sendOtp = async (req, res) => {
       });
     }
   });
-
- 
 };
-const verifyOtp =async (req,res) =>{
-    try{
-      const {otp}=req.body
-      const exist =await User.findOne({otp:otp});
-      console.log("user otp",req.body.otp);
-      console.log("user otp",otp);
-      if(exist){
-        return res.status(200).json({
-            success:true,
-            message:"OTP verification successful"
-
-        })
-      }
-      else{
-        return res.status(402).json({
-           success:false,
-           error:"Invalid OTP"
-        })
-      }
-      
+const verifyOtp = async (req, res) => {
+  try {
+    const { otp } = req.body;
+    const exist = await User.findOne({ otp: otp });
+    console.log("user otp", req.body.otp);
+    console.log("user otp", otp);
+    if (exist) {
+      return res.status(200).json({
+        success: true,
+        message: "OTP verification successful",
+      });
+    } else {
+      return res.status(402).json({
+        success: false,
+        error: "Invalid OTP",
+      });
     }
-    catch(error){
-        returnres.status(500).json({
-            success:false,
-            error:'Internal server error'
-        })
-    }
-}
-module.exports = { sendOtp,verifyOtp };
+  } catch (error) {
+    returnres.status(500).json({
+      success: false,
+      error: "Internal server error",
+    });
+  }
+};
+module.exports = { sendOtp, verifyOtp };
