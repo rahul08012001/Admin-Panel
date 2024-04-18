@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useCallback} from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import {
   TextField,
@@ -9,17 +9,17 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useDispatch } from "react-redux";
-import { profileSuccess, profileFailure } from "../redux/authSlice";
+import { useDispatch} from "react-redux";
+import { loginSuccess, loginFailure } from "../redux/authSlice";
 import Dashboard from "./Dashboard";
 const Profile = () => {
   const dispatch = useDispatch();
-
+  
   const paperStyle = {
     padding: "7px 5px",
     width: 600,
@@ -42,11 +42,11 @@ const Profile = () => {
       .max(10, "Too Long !")
       .max(10, "Too Long!"),
   });
-  console.log("initialValues", initialValues);
+  // console.log("initialValues", initialValues);
   const token = localStorage.getItem("token");
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
  
- const fetchData = async () => {
+ const fetchData =  useCallback(async () => {
     try {
       const end = process.env.REACT_APP_API_URL;
       const response = await axios.get(`${end}/getUser`, {
@@ -55,21 +55,23 @@ const Profile = () => {
           Authorization: token,
         },
       });
-      const userData = response.data.data;
-      dispatch(profileSuccess({ userData}));
+      
+      const user = response.data.data;
+      console.log(user , "response data");
+      dispatch(loginSuccess({ user: user }));
       setInitialValues({
-        name: userData.name,
-        email: userData.email,
-        mobile: userData.mobile,
-        image: userData.image,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        image: user.image,
       });
     } catch (error) {
       console.log("Error fetching user data:", error);
-      dispatch(profileFailure({ error: "data are not get" }));
+      dispatch(loginFailure({ error: "data are not get" }));
       // Handle error appropriately, e.g., show an error message to the user
       toast.error("Failed to fetch user data. Please try again.");
     }
-  };
+  },[dispatch, token, setInitialValues]);
 
   useEffect(() => {
     fetchData();
@@ -93,15 +95,15 @@ const Profile = () => {
           Authorization: token,
         },
       });
+      console.log("response",response.data.data);
 
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
         fetchData()
-        // setTimeout(() => {
-        //   navigate("/home");
-        // }, 5500);
-      } else {
-        toast.error("Failed to update profile. Please try again.");
+        // dispatch(loginSuccess({ user: response.data.data }));
+        setTimeout(() => {
+          navigate("/Dashboard");
+        }, 5500);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -132,6 +134,7 @@ const Profile = () => {
             alignItems="center"
             height="80vh"
           >
+            {console.log("values",values)}
             <Grid item xs={6}>
               <Box textAlign="center">
                 <Avatar
@@ -171,7 +174,7 @@ const Profile = () => {
                       as={TextField}
                       label="Name"
                       variant="outlined"
-                      value={values?.name}
+                      // value={values?.name}
                       fullWidth
                     />
                     <ErrorMessage

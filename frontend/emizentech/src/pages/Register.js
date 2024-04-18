@@ -34,6 +34,7 @@ const initialValuesRegister = {
   email: "",
   password: "",
   mobile: "",
+  role:""
 };
 
 const FormRegister = () => {
@@ -45,6 +46,7 @@ const FormRegister = () => {
 
   const handleFormSubmit = async (values, { setSubmitting }) => {
     try {
+      // values.role = "Admin";
       const end = process.env.REACT_APP_API_URL;
       const response = await axios.post(`${end}/Register`, values, {
         headers: {
@@ -164,18 +166,15 @@ const FormRegister = () => {
                   {" "}
                   {/* Add margin from the top */}
                   <Button
-                    fullWidth
-                    type="submit"
-                    disabled={isSubmitting}
-                    sx={{
-                      backgroundColor: palette.primary.main,
-                      color: palette.background.alt,
-                      "&:hover": { color: palette.primary.main },
-                    }}
-                  >
-                    {/* REGISTER */}
-                    {isSubmitting ? "REGISTERING in..." : "REGISTER"}
-                  </Button>
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={isSubmitting}
+                  fullWidth
+                  style={{ marginTop: "16px" }}
+                >
+                  Register
+                </Button>
                   <Typography
                     onClick={() => {
                       navigate("/Login");

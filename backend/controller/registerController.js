@@ -9,6 +9,7 @@ const registerUser= async (req,res)=>{
     email:req.body?.email,
     password:req.body?.password,
     mobile:req.body?.mobile,
+    role:req.body?.role
 })
 const email =req.body.email;
 console.log("user",user);

@@ -61,8 +61,9 @@ const initialValuesRegister = {
   };
   
     return (
-        <>
+        <> 
         <Dashboard />
+       
         <Formik
             onSubmit={handleFormSubmit}
             initialValues={initialValuesRegister}
@@ -127,18 +128,16 @@ const initialValuesRegister = {
                            
                         </Box>
                         <Box mt={1}> {/* Add margin from the top */}
-                            <Button
-                                fullWidth
-                                type="submit"
-                                disabled={isSubmitting}
-                                sx={{
-                                    backgroundColor: palette.primary.main,
-                                    color: palette.background.alt,
-                                    '&:hover': { color: palette.primary.main },
-                                }}
-                            >
-                                {isSubmitting ? "Logging in..." : "Change Password"}
-                            </Button>
+                        <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={isSubmitting}
+                  fullWidth
+                  style={{ marginTop: "16px" }}
+                >
+                  Change Password
+                </Button>
                           
                         </Box>
                     </form>

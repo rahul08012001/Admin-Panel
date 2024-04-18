@@ -27,7 +27,26 @@ confirmPassword:{
 image:{
     type:String,
    // required:true
-}
+},
+role:{
+    type:String
+},
+status: {
+    type: String,
+   
+  },
+job:{
+    type:String,
+    
+},
+age:{
+    type:String,
+    
+},
+employeeId:{
+    type:String,
+    
+},
 
 
 })

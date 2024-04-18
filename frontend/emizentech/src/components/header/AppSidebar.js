@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -29,13 +29,13 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import InsightsIcon from "@mui/icons-material/Insights";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import HelpIcon from "@mui/icons-material/Help";
 import { useSelector } from "react-redux";
 
-
 const drawerWidth = 240;
+
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -106,11 +106,27 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function HeaderBar() {
+export default function HeaderBar(role) {
+console.log("role",role);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+  
+
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const user = useSelector((state) => state.isprofileIn.user?.userData.image);
-  console.log("user___", user);
+  const user = useSelector((state) => state.isLoginIn.user.user
+
+  );
+  // console.log("user___", user);
+
+
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -131,7 +147,7 @@ export default function HeaderBar() {
   };
   const navigate = useNavigate();
   const handleHome = () => {
-    navigate("/home");
+    navigate("/Dashboard");
   };
 
   const removeToken = (token) => {
@@ -142,6 +158,10 @@ export default function HeaderBar() {
     navigate("/login");
   };
 
+
+  if(user?.role==="Admin"){
+   
+ 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -176,7 +196,7 @@ export default function HeaderBar() {
                 >
                   <Avatar
                     alt="Remy Sharp"
-                    src={`http://localhost:8005/upload/images/${user}`}
+                    src={`http://localhost:8005/upload/images/${user?.image}`}
                   />
                 </IconButton>
               </Tooltip>
@@ -210,13 +230,7 @@ export default function HeaderBar() {
                 >
                   <Typography textAlign="center">Change Password</Typography>
                 </MenuItem>
-                <MenuItem
-                  component={Link}
-                  to="/Dashboard"
-                  onClick={handleCloseUserMenu}
-                >
-                  <Typography textAlign="center">Account</Typography>
-                </MenuItem>
+               
                 <MenuItem icon={<LogoutIcon />} onClick={removeToken}>
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
@@ -238,10 +252,13 @@ export default function HeaderBar() {
         <Divider />
 
         <List>
+      
+    
+
           <ListItem key="Dashboard" disablePadding sx={{ display: "block" }}>
             <ListItemButton
               sx={{
-                minHeight: 48,
+                // minHeight: 48,
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
@@ -261,14 +278,16 @@ export default function HeaderBar() {
               />
             </ListItemButton>
           </ListItem>
-
-          <ListItem key="Projects" disablePadding sx={{ display: "block" }}>
+  
+          <ListItem key="Employee" disablePadding sx={{ display: "block" }}>
             <ListItemButton
               sx={{
                 minHeight: 48,
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              component={Link} 
+              to="/Admin"
             >
               <ListItemIcon
                 sx={{
@@ -279,7 +298,31 @@ export default function HeaderBar() {
               >
                 <DashboardIcon />
               </ListItemIcon>
-              <ListItemText primary="Projects" sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary="Admin" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+        
+        
+          <ListItem key="subAdmin" disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+              component={Link} 
+              to="/Subadmin"
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+               <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText primary="Sub Admin" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
           <ListItem key="Tasks" disablePadding sx={{ display: "block" }}>
@@ -289,6 +332,8 @@ export default function HeaderBar() {
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              component={Link} 
+              to="/Subadmin"
             >
               <ListItemIcon
                 sx={{
@@ -302,13 +347,15 @@ export default function HeaderBar() {
               <ListItemText primary="Tasks" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-          <ListItem key="Team" disablePadding sx={{ display: "block" }}>
+          <ListItem key="manageAccounts" disablePadding sx={{ display: "block" }}>
             <ListItemButton
               sx={{
                 minHeight: 48,
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              component={Link} 
+              to="/ManageAccounts"
             >
               <ListItemIcon
                 sx={{
@@ -317,9 +364,9 @@ export default function HeaderBar() {
                   justifyContent: "center",
                 }}
               >
-                <PeopleOutlinedIcon />
+                <ManageAccountsIcon />
               </ListItemIcon>
-              <ListItemText primary="Team" sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary="User Management" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
           <ListItem key="Wallets" disablePadding sx={{ display: "block" }}>
@@ -336,7 +383,7 @@ export default function HeaderBar() {
                   mr: open ? 3 : "auto",
                   justifyContent: "center",
                 }}
-              >
+              > 
                 <AccountBalanceWalletIcon />
               </ListItemIcon>
               <ListItemText primary="Wallets" sx={{ opacity: open ? 1 : 0 }} />
@@ -370,4 +417,247 @@ export default function HeaderBar() {
       <DrawerHeader />
     </Box>
   );
+
+              }
+              else 
+              if(user?.role==="Subadmin"){
+               
+             
+              return (
+                <Box sx={{ display: "flex" }}>
+                  <CssBaseline />
+                  <AppBar position="fixed" open={open}>
+                    <Toolbar>
+                      <IconButton
+                        color="#03a9f4"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        edge="start"
+                        sx={{
+                          marginRight: 5,
+                          ...(open && { display: "none" }),
+                        }}
+                      >
+                        <MenuIcon />
+                      </IconButton>
+            
+                      <Typography
+                        variant="h4"
+                        style={{ fontFamily: '"Khand", sans-serif', color: "#03a9f4" }}
+                      >
+                        <div onClick={handleHome}>EmizenTech</div>
+                      </Typography>
+            
+                      <Toolbar sx={{ marginLeft: "auto" }}>
+                        <Box sx={{ flexGrow: 0 }}>
+                          <Tooltip title="Open settings">
+                            <IconButton
+                              onClick={handleOpenUserMenu}
+                              sx={{ marginLeft: " 0 auto" }}
+                            >
+                              <Avatar
+                                alt="Remy Sharp"
+                                src={`http://localhost:8005/upload/images/${user?.image}`}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                          <Menu
+                            sx={{ mt: "45px" }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                              vertical: "top",
+                              horizontal: "right",
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                              vertical: "top",
+                              horizontal: "right",
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
+                          >
+                            <MenuItem
+                              component={Link}
+                              to="/Profile"
+                              onClick={handleCloseUserMenu}
+                            >
+                              <Typography textAlign="center">Profile</Typography>
+                            </MenuItem>
+                            <MenuItem
+                              component={Link}
+                              to="/Passwordchange"
+                              onClick={handleCloseUserMenu}
+                            >
+                              <Typography textAlign="center">Change Password</Typography>
+                            </MenuItem>
+                           
+                            <MenuItem icon={<LogoutIcon />} onClick={removeToken}>
+                              <Typography textAlign="center">Logout</Typography>
+                            </MenuItem>
+                          </Menu>
+                        </Box>
+                      </Toolbar>
+                    </Toolbar>
+                  </AppBar>
+                  <Drawer variant="permanent" open={open}>
+                    <DrawerHeader>
+                      <IconButton onClick={handleDrawerClose} sx={{ color: "#03a9f4" }}>
+                        {theme.direction === "rtl" ? (
+                          <ChevronRightIcon />
+                        ) : (
+                          <ChevronLeftIcon />
+                        )}
+                      </IconButton>
+                    </DrawerHeader>
+                    <Divider />
+            
+                    <List>
+                  
+                
+            
+                      <ListItem key="Dashboard" disablePadding sx={{ display: "block" }}>
+                        <ListItemButton
+                          sx={{
+                            // minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <InsightsIcon />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary="Dashboard"
+                            sx={{ opacity: open ? 1 : 0 }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+              
+                    
+                      <ListItem key="subAdmin" disablePadding sx={{ display: "block" }}>
+                        <ListItemButton
+                          sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                          }}
+                          component={Link} 
+                          to="/Subadmin"
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                            }}
+                          >
+                           <DashboardIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Sub Admin" sx={{ opacity: open ? 1 : 0 }} />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem key="Tasks" disablePadding sx={{ display: "block" }}>
+                        <ListItemButton
+                          sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                          }}
+                          component={Link} 
+                          to="/Subadmin"
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <TaskAltIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Tasks" sx={{ opacity: open ? 1 : 0 }} />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem key="manageAccounts" disablePadding sx={{ display: "block" }}>
+                        <ListItemButton
+                          sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                          }}
+                          component={Link} 
+                          to="/ManageAccounts"
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <ManageAccountsIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="User Management" sx={{ opacity: open ? 1 : 0 }} />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem key="Wallets" disablePadding sx={{ display: "block" }}>
+                        <ListItemButton
+                          sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                            }}
+                          > 
+                            <AccountBalanceWalletIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Wallets" sx={{ opacity: open ? 1 : 0 }} />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem key="Help" disablePadding sx={{ display: "block" }}>
+                        <ListItemButton
+                          sx={{
+                            minHeight: 48,
+                            justifyContent: open ? "initial" : "center",
+                            px: 2.5,
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: open ? 3 : "auto",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <HelpIcon />
+                          </ListItemIcon>
+                          <ListItemText primary="Help" sx={{ opacity: open ? 1 : 0 }} />
+                        </ListItemButton>
+                      </ListItem>
+                      {/* Repeat the above structure for other list items */}
+                    </List>
+            
+                    <Divider />
+                  </Drawer>
+                  <DrawerHeader />
+                </Box>
+              );
+            
+                          }
+  
 }
+
+

@@ -11,17 +11,19 @@ import Otpsend from './pages/Forgotpassword';
 import Forgot from './pages/Resetpassword';
 import Home from './pages/Home';
 import Profile from './components/profile';
-// import Dashboard from './components/Dashboard';
+import Admin from './views/projects/superAdmin';
+import ManageAccounts from './views/ManageAccounts/ManageAccounts';
+import Employee from './views/projects/addSubAdmin';
+import UpdateEmployee from './views/projects/updateEmployee';
+import Subadmin from './views/projects/subAdmin';
 import Passwordchange from './components/changePassword';
-// import { ToastContainer } from "react-toastify";
-// import Header from './header/App';
-
+import Dashboard from './components/Dashboard';
 
   const routes = [
     {
       path: "/",
-      element: <ProtectedRoute element={<Home />} />,
-      children:[{ path: "Home", element: <Home/> }],
+      element: <ProtectedRoute element={<Dashboard />} />,
+      children:[{ path: "Dashboard", element: <Dashboard/> }],
     },
     
       { path: '/register', element: <Register /> },
@@ -29,10 +31,13 @@ import Passwordchange from './components/changePassword';
       { path: '/Otpsend', element: <Otpsend /> },
       { path: '/Forgot', element: <Forgot /> },
       { path: '/Profile', element: <Profile /> },
-      // { path: '/Dashboard', element: <Dashboard /> },
+      
+      { path: '/Employee', element: <Employee /> },
+      { path: '/updateEmployee/:id', element: <UpdateEmployee /> },
       { path: '/Passwordchange', element: <Passwordchange /> },
-      // <ToastContainer />
-    
+      { path: '/Admin', element: <Admin /> },
+      { path: '/Subadmin', element: <Subadmin /> },
+      { path: '/ManageAccounts', element: <ManageAccounts /> },
      
       
      

@@ -1,22 +1,91 @@
+const Employee = require("../model/employee");
 const User = require("../model/register");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-// const { request } = require('express');
+
+// const Login = async (req, res) => {
+//   try {
+//     const email = req.body?.email;
+//     const password = req.body?.password;
+
+//     const user = await User.findOne({ email: email });
+    
+//     if (!user) {
+//       const employee = await Employee.findOne({ email: email });
+//       if (!employee) {
+//         return res.status(401).json({
+//           status: 401,
+//           error: "User Not Found",
+//         });
+//       }
+     
+//       const passwordMatch = await bcrypt.compare(password, employee.password);
+//       if (!passwordMatch) {
+//         return res.status(402).json({
+//           status: 402,
+//           error: "Password is incorrect",
+//         });
+//       }
+//       const token = jwt.sign({ userId: employee._id }, "your-secret-key", {
+//         expiresIn: "1h",
+//       });
+
+//       return res.status(200).json({
+//         status: 200,
+//         message: "User login",
+//         data: employee,
+//         token: token,
+//       });
+//     }
+
+//     // If user found in User schema, compare password
+//     const passwordMatch = await bcrypt.compare(password, user.password);
+//     if (!passwordMatch) {
+//       return res.status(402).json({
+//         status: 402,
+//         error: "Password is incorrect",
+//       });
+//     }
+//     const token = jwt.sign({ userId: user._id }, "your-secret-key", {
+//       expiresIn: "1h",
+//     });
+
+//     return res.status(200).json({
+//       status: 200,
+//       message: "User login",
+//       data: user,
+//       token: token,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       status: 500,
+//       error: "Login failed: " + error.message,
+//       data: null,
+//     });
+//   }
+// };
 
 const Login = async (req, res) => {
   try {
     const email = req.body?.email;
     const password = req.body?.password;
-    // const {email,password}=req.body;
+    const role= req.body?.role;
+    
 
-    const user = await User.findOne({ email: email });
-    console.log(user);
+
+    console.log("email",role);
+
+    const user = await User.findOne({ email:email,role:role});
+    console.log("user",user);
     if (!user) {
       return res.status(401).json({
         status: 401,
         error: "User Not Found ",
       });
+    }
+    if (user.status === 'inactive') {
+      return res.status(403).json({ status: 403, error: "User status is inactive" });
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     console.log(passwordMatch);
@@ -34,7 +103,9 @@ const Login = async (req, res) => {
       status: 200,
       message: "user login",
       data: user,
+      role:role,
       token: token,
+
     });
   } catch (error) {
     return res.status(500).json({
@@ -44,6 +115,7 @@ const Login = async (req, res) => {
     });
   }
 };
+
 
 const changePassword = async (req, res) => {
   try {
@@ -63,7 +135,7 @@ const changePassword = async (req, res) => {
         error: "user not  found",
       });
     }
-
+    
     const comparePassword = await bcrypt.compare(Old_password, user.password);
     if (!comparePassword) {
       return res.status(404).json({
@@ -102,41 +174,44 @@ const changePassword = async (req, res) => {
     });
   }
 };
-const getUser =async (req,res)=>{
-  try{
-    const userId= req.userId;
-    console.log(userId);
-    const exist = await User.findById(userId)
-    console.log(exist);
-    if(!exist)
-   {
-     console.log("user data not found");
-     return res.status(400).jaon({
-      status:400,
-      error:'user data not found'
-     })
+
+const getUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Check if user exists in the User schema
+    const user = await User.findById(userId);
+    if (user) {
+      return res.status(200).json({
+        status: 200,
+        message: "User found",
+        data: user,
+      });
     }
-  
-    return res.status(200).json({
-      status: 200,
-      message: "profile update Successfuly",
 
-      data: exist,
+    // If user not found in User schema, check Employee schema
+    const employee = await Employee.findById(userId);
+    if (employee) {
+      return res.status(200).json({
+        status: 200,
+        message: "Employee found",
+        data: employee,
+      });
+    }
+
+    // If user not found in either schema, return error
+    return res.status(404).json({
+      status: 404,
+      error: "User or employee not found",
     });
-
-  }catch(error){
-console.log("error",error);
-return res.status(500).json({
-  status: 500,
-  error: "Server error",
-});
-
+  } catch (error) {
+    console.log("Error:", error);
+    return res.status(500).json({
+      status: 500,
+      error: "Server error",
+    });
   }
-
-}
-
-
-
+};
 
 
 
@@ -147,41 +222,61 @@ const profile = async (req, res) => {
     if (req.file) {
       image = req.file.originalname;
     }
-    // let updateId = req.userId;
     const userId = req.userId;
     let name = req.body.name;
     let email = req.body.email;
     let mobile = req.body.mobile;
 
-    console.log(userId);
-    const exist = await User.findByIdAndUpdate(
+    // Check if the user exists in the User schema
+    const user = await User.findByIdAndUpdate(
       userId,
       { name: name, email: email, mobile: mobile, image: image },
       { new: true }
     );
-   if(!exist)
-   {
-    return res.status(400).json({
-      status:400,
-      error: 'user data are not Update '
-    })
 
-   }
+    // If user not found in User schema, update profile in Employee schema
+    if (!user) {
+      const employee = await Employee.findByIdAndUpdate(
+        userId,
+        { name: name, email: email, mobile: mobile, image: image },
+        { new: true }
+      );
 
-    console.log(exist);
+      if (!employee) {
+        return res.status(404).json({
+          status: 404,
+          error: "User not found",
+        });
+      }
+
+      return res.status(200).json({
+        status: 200,
+        message: "Profile updated successfully",
+        data: employee, // Return either user or employee data
+      });
+    }
+
     return res.status(200).json({
       status: 200,
-      message: "profile update Successfuly",
-
-      data: exist,
+      message: "Profile updated successfully",
+      data: user, // Return either user or employee data
     });
   } catch (error) {
+    console.error("Error updating profile:", error);
     return res.status(500).json({
       status: 500,
-      error: "Server error",
+      error: "Internal server error",
     });
   }
 };
-// updateDocument(updateId);
 
-module.exports = { Login, changePassword, profile ,getUser};
+
+
+module.exports = {
+  Login,
+  changePassword,
+  profile,
+  getUser,
+ 
+  
+};
