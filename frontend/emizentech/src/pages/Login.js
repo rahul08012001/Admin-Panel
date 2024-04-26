@@ -45,10 +45,10 @@ console.log("role",role);
 console.log("response.data.data.role",response.data.data.role);
       
       if (response.data.status === 200) {
-        fetchData();
+        
         const userRole = response.data.data.role;
        navigate("/Dashboard");
-console.log("response.data.data",response.data);
+console.log("response.data.data",response.data);  
         dispatch(loginSuccess({ user: response.data.data }));
         tokenSave(response.data.token);
         toast.success("Success Login !");
@@ -69,24 +69,6 @@ console.log("response.data.data",response.data);
     localStorage.setItem("token", token);
   };
  
-  const fetchData = async () => {
-    try {
-      const end = process.env.REACT_APP_API_URL;
-      const response = await axios.get(`${end}/getUser`, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: token,
-        },
-      });
-      
-      // const user = response.data.data;
-      // dispatch(loginSuccess({ user: user }));
-    
-    } catch (error) {
-      console.log("Error fetching user data:", error);
-      toast.error("Failed to fetch user data. Please try again.");
-    }
-  };
 
   const paperStyle = { padding: "50px 30px", width: 350, margin: "20px auto" };
 

@@ -12,7 +12,9 @@ import Forgot from './pages/Resetpassword';
 import Home from './pages/Home';
 import Profile from './components/profile';
 import Admin from './views/projects/superAdmin';
-import ManageAccounts from './views/ManageAccounts/ManageAccounts';
+import Role from './views/ManageAccounts/ManageAccounts';
+import Addrole from './views/ManageAccounts/addRole';
+import Updaterole from './views/ManageAccounts/updateRole';
 import Employee from './views/projects/addSubAdmin';
 import UpdateEmployee from './views/projects/updateEmployee';
 import Subadmin from './views/projects/subAdmin';
@@ -37,9 +39,9 @@ import Dashboard from './components/Dashboard';
       { path: '/Passwordchange', element: <Passwordchange /> },
       { path: '/Admin', element: <Admin /> },
       { path: '/Subadmin', element: <Subadmin /> },
-      { path: '/ManageAccounts', element: <ManageAccounts /> },
-     
-      
+      { path: '/Role', element: <Role /> },
+      { path: '/Addrole', element: <Addrole /> },
+      { path: '/Updaterole/:id', element: <Updaterole /> },
      
   ]
 

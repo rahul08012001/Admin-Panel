@@ -11,7 +11,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 export default function DataTable() {
   const [rows, setRows] = useState([]);
-  const [checked, setChecked] = useState(true);
+//   const [checked, setChecked] = useState(true);
 
   useEffect(() => {
     fetchUserData();
@@ -95,9 +95,9 @@ console.log("delId",delId);
         />
       ),
     },
-    { field: "name", headerName: "Name", width: 130 },
+   
     { field: "role", headerName: "Role", width: 130 },
-    { field: "email", headerName: "Email", width: 200 },
+  
     {
       field: "actions",
       headerName: "Actions",
@@ -120,18 +120,18 @@ console.log("delId",delId);
         </div>
       ),
     },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 100,
-      renderCell: (params) => (
-        <Switch
-          checked={params.row.status === 'active'}
-          onChange={(e) => handleStatus(e, params.row.delId, params.row.status)}
-          inputProps={{ 'aria-label': 'controlled' }}
-        />
-      ),
-    },
+    // {
+    //   field: "status",
+    //   headerName: "Status",
+    //   width: 100,
+    //   renderCell: (params) => (
+    //     <Switch
+    //       checked={params.row.status === 'active'}
+    //       onChange={(e) => handleStatus(e, params.row.delId, params.row.status)}
+    //       inputProps={{ 'aria-label': 'controlled' }}
+    //     />
+    //   ),
+    // },
   ];
 
   return (
@@ -167,7 +167,7 @@ console.log("delId",delId);
                 component={Link}
                 to="/Employee"
               >
-                Add User
+                Add Role
               </Button>
             </label>
           </div>

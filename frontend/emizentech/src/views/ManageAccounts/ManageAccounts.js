@@ -1,61 +1,127 @@
+
+
 import Dashboard from "../../components/Dashboard";
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, Menu, MenuItem } from "@mui/material"; // Import Menu and MenuItem
-import IconButton from "@mui/material/IconButton";
+import { Button, IconButton, Avatar, Switch } from "@mui/material";
+import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 export default function DataTable() {
   const [rows, setRows] = useState([]);
-  const [anchorEl, setAnchorEl] = useState(null); // State for anchor element of the menu
+  const [checked, setChecked] = useState(true);
 
-  const handleAddUserClick = (event) => {
-    setAnchorEl(event.currentTarget); // Open the menu
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const end = process.env.REACT_APP_API_URL;
+      const response = await axios.get(`${end}/AllRole`);
+
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch data");
+      }
+
+      const data = response.data.data.map((row, index) => ({
+        id: index + 1,
+        delId: row._id,
+        ...row,
+      }));
+
+      setRows(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null); // Close the menu
+  const handleAddUserClick = async () => {
+    fetchUserData();
   };
 
-  const handleRoleSelect = (role) => {
-    // Perform actions based on selected role (Admin or Subadmin)
-    console.log("Selected Role:", role);
-    // You can add logic here to handle the selected role
-    handleMenuClose(); // Close the menu after selection
+  const handleStatus = async (e, delId, currentStatus) => {
+    e.preventDefault();
+console.log("delId",delId);
+    try {
+      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+      
+      const response = await axios.post(`http://localhost:8005/updateStatus/${delId}`, {
+        delId,
+        status: newStatus,
+      });
+
+      if (response.data) {
+        const updatedRows = rows.map(row =>
+          row.delId === delId ? { ...row, status: newStatus } : row
+        );
+        setRows(updatedRows);
+      }
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data.error : error.message);
+    }
   };
 
-  const handleAddRow = () => {
-    // Add a new row to the state
-    const newRow = { id: rows.length + 1, role: "New Role", email: "new@example.com", mobile: "1234567890" };
-    setRows([...rows, newRow]);
-  };
+  const handleDelete = async (delId) => {
+    try {
+      const url = `http://localhost:8005/deleteRole/${delId}`;
+      const response = await axios.delete(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-  const handleDelete = (id) => {
-    // Filter out the row with the specified id
-    setRows(rows.filter((row) => row.id !== id));
+      if (response.data.status === 200) {
+        setRows(rows.filter((row) => row.delId !== delId));
+        fetchUserData();
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
   };
 
   const columns = [
-    { field: "role", headerName: "Role", width: 130 },
-    { field: "email", headerName: "Email", width: 200 },
-    { field: "mobile", headerName: "Mobile", width: 130 },
+    { field: "id", headerName: "ID", width: 100 },
+    
+ 
+    { field: "name", headerName: "Role", width: 130 },
+  
     {
-      field: "actions",
-      headerName: "Actions",
+      field: "delete",
+      headerName: "Delete Role",
       width: 160,
       renderCell: (params) => (
         <div>
-          <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
+          <IconButton
+            aria-label="delete"
+            onClick={() => handleDelete(params.row.delId)}
+          >
             <DeleteIcon />
           </IconButton>
-          <IconButton aria-label="edit" component={Link} to={`/updateEmployee/${params.row.id}`}>
+        
+        </div>
+      ),
+    },
+    {
+      field: "update",
+      headerName: "Update Role",
+      width: 160,
+      renderCell: (params) => (
+        <div>
+        
+          <IconButton
+            aria-label="edit"
+            component={Link}
+            to={`/updateRole/${params.row.delId}`}
+          >
             <EditIcon />
           </IconButton>
         </div>
       ),
     },
+  
   ];
 
   return (
@@ -69,7 +135,14 @@ export default function DataTable() {
           height: "90vh",
         }}
       >
-        <div style={{ height: 500, width: "70%", marginLeft: "200px", marginRight: "50px" }}>
+        <div
+          style={{
+            height: 500,
+            width: "70%",
+            marginLeft: "200px",
+            marginRight: "50px",
+          }}
+        >
           <div
             style={{
               display: "flex",
@@ -78,27 +151,22 @@ export default function DataTable() {
             }}
           >
             <label htmlFor="Add Role">
-              <Button variant="contained" onClick={handleAddUserClick}>
+              <Button
+                variant="contained"
+                onClick={handleAddUserClick}
+                component={Link}
+                to="/Addrole"
+              >
                 Add Role
               </Button>
             </label>
-            {/* Menu for role selection */}
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-            >
-              <MenuItem onClick={() => handleRoleSelect("Admin")}>Admin</MenuItem>
-              <MenuItem onClick={() => handleRoleSelect("Subadmin")}>Subadmin</MenuItem>
-            </Menu>
-            <Button variant="contained" onClick={handleAddRow} style={{marginLeft: '10px'}}>
-              Add Row
-            </Button>
           </div>
+
           <DataGrid
             rows={rows}
             columns={columns}
             pageSize={5}
+            checkboxSelection
             disableRowSelectionOnClick
           />
         </div>

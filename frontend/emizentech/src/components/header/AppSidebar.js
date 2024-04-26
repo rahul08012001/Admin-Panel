@@ -109,14 +109,16 @@ const Drawer = styled(MuiDrawer, {
 export default function HeaderBar(role) {
 console.log("role",role);
   const [anchorEl, setAnchorEl] = useState(null);
+  const handleMenuClose = () => {
+    setAnchorEl(null); // Close the menu
+      setOpen(false);
+  };
+
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
   
 
   const theme = useTheme();
@@ -348,27 +350,35 @@ console.log("role",role);
             </ListItemButton>
           </ListItem>
           <ListItem key="manageAccounts" disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
-              }}
-              component={Link} 
-              to="/ManageAccounts"
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : "auto",
-                  justifyContent: "center",
-                }}
-              >
-                <ManageAccountsIcon />
-              </ListItemIcon>
-              <ListItemText primary="User Management" sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem>
+  <ListItemButton
+    onClick={handleMenuOpen}
+    sx={{
+      minHeight: 48,
+      justifyContent: open ? "initial" : "center",
+      px: 2.5,
+    }}
+  >
+    <ListItemIcon
+      sx={{
+        minWidth: 0,
+        mr: open ? 3 : "auto",
+        justifyContent: "center",
+      }}
+    >
+      <ManageAccountsIcon />
+    </ListItemIcon>
+    <ListItemText primary="User Management" sx={{ opacity: open ? 1 : 0 }} />
+  </ListItemButton>
+  <Menu
+    anchorEl={anchorEl}
+    open={Boolean(anchorEl)}
+    onClose={handleMenuClose}
+  >
+    <MenuItem  component={Link} 
+              to="/Role" onClick={handleMenuClose}>Role</MenuItem>
+    <MenuItem onClick={handleMenuClose}>Permission</MenuItem>
+  </Menu>
+</ListItem>
           <ListItem key="Wallets" disablePadding sx={{ display: "block" }}>
             <ListItemButton
               sx={{
@@ -604,6 +614,7 @@ console.log("role",role);
                           >
                             <ManageAccountsIcon />
                           </ListItemIcon>
+                         
                           <ListItemText primary="User Management" sx={{ opacity: open ? 1 : 0 }} />
                         </ListItemButton>
                       </ListItem>
@@ -659,5 +670,4 @@ console.log("role",role);
                           }
   
 }
-
 

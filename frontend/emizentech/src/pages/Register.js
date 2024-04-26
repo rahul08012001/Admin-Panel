@@ -44,43 +44,75 @@ const FormRegister = () => {
   // const isNonMobile = useMediaQuery("(min-width:600px)");
   const paperStyle = { padding: "30px 20px", width: 350, margin: "20px auto" };
 
-  const handleFormSubmit = async (values, { setSubmitting }) => {
-    try {
-      // values.role = "Admin";
-      const end = process.env.REACT_APP_API_URL;
-      const response = await axios.post(`${end}/Register`, values, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+  // const handleFormSubmit = async (values, { setSubmitting }) => {
+  //   try {
+  //     values.role = "Admin";
+  //     const end = process.env.REACT_APP_API_URL;
+  //     const response = await axios.post(`${end}/Register`, values, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     console.log(response.status);
+  //     if (response.status === 200) {
+  //       // setSubmitting(false);
+  //       toast.success("Success Register !");
+
+  //       console.log(response.data);
+  //       setTimeout(async () => {
+  //         navigate("/Login");
+  //       }, 5500);
+  //     }
+  //   } catch (error) {
+  //     // if(error){
+  //     //   toast.error('Registration failed. Please try again.');
+  //     // }
+
+  //     console.log("error", error);
+
+  //     if (error.response.data.status === 409) {
+  //       toast.error("Registration failed. Email is already exist");
+
+  //       console.log("Email is already exist");
+  //     }
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+
+  
+
+  //   console.log("setTimeout");
+  // };
+
+
+  const handleFormSubmit =  async function handler(req, res) {
+    const options = {
+      method: 'POST',
+      url: 'http://localhost:4000/graphql',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: {
+        query: `{
+                  users{
+                      name
+                      email
+                      password
+                      mobile
+                  }
+              }`
+      }
+    };
+    axios
+      .request(options)
+      .then(function (response) {
+        console.log(response.data); // Response
+      })
+      .catch(function (error) {
+        console.error(error);
       });
-      console.log(response.status);
-      if (response.status === 200) {
-        // setSubmitting(false);
-        toast.success("Success Register !");
+  }
 
-        console.log(response.data);
-        setTimeout(async () => {
-          navigate("/Login");
-        }, 5500);
-      }
-    } catch (error) {
-      // if(error){
-      //   toast.error('Registration failed. Please try again.');
-      // }
-
-      console.log("error", error);
-
-      if (error.response.data.status === 409) {
-        toast.error("Registration failed. Email is already exist");
-
-        console.log("Email is already exist");
-      }
-    } finally {
-      setSubmitting(false);
-    }
-
-    console.log("setTimeout");
-  };
 
   return (
     <div>
